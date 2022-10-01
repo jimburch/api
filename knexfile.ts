@@ -1,5 +1,4 @@
 require('dotenv').config();
-console.log('KNEXFILE ENV', process.env.DB_URL);
 
 module.exports = {
 	development: {
