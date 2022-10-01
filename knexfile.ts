@@ -1,14 +1,15 @@
-import type { Knex } from 'knex';
+require('dotenv').config();
+console.log('KNEXFILE ENV', process.env.DB_URL);
 
-const config: { [key: string]: Knex.Config } = {
+module.exports = {
 	development: {
 		client: 'pg',
-		connection: process.env.DATABASE_URL,
+		connection: process.env.DB_URL,
 	},
 
 	staging: {
 		client: 'pg',
-		connection: process.env.DATABASE_URL,
+		connection: process.env.DB_URL,
 		pool: {
 			min: 2,
 			max: 10,
@@ -21,7 +22,7 @@ const config: { [key: string]: Knex.Config } = {
 
 	production: {
 		client: 'pg',
-		connection: process.env.DATABASE_URL,
+		connection: process.env.DB_URL,
 		pool: {
 			min: 2,
 			max: 10,
@@ -32,5 +33,3 @@ const config: { [key: string]: Knex.Config } = {
 		},
 	},
 };
-
-module.exports = config;
