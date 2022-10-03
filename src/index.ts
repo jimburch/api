@@ -1,13 +1,37 @@
+require("dotenv").config();
 import express from "express";
-import hoopsbotRouter from "./routes/hoopsbot.routes";
+import cors from "cors";
+import passport from "passport";
+import { Strategy } from "passport-http-bearer";
 
-const app = express();
+import hoopsbotRouter from "./routes/hoopsbot.routes";
+import { corsConfig } from "./utilities/cors";
 
 const PORT = process.env.PORT || 8080;
 
-app.get("/", (req, res) => {
-  res.send({ message: "Hello World" });
-});
+const app = express();
+
+app.use(cors());
+app.use(passport.initialize());
+
+passport.use(
+  new Strategy(async (token, done) => {
+    if (token && token === process.env.BEARER_TOKEN) {
+      return done(null, token);
+    } else {
+      return done(null, false);
+    }
+  })
+);
+
+app.get(
+  "/",
+  cors(corsConfig),
+  passport.authenticate("bearer", { session: false }),
+  async (req, res) => {
+    res.send({ message: "Hello World" });
+  }
+);
 
 app.use("/hoopsbot", hoopsbotRouter);
 
