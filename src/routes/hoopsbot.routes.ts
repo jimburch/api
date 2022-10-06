@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import { corsConfig } from "../utilities/cors";
 import passport from "passport";
-import { generate } from "../controllers/hoopsbot.controller";
+import { generate, save } from "../controllers/hoopsbot.controller";
 
 const hoopsbotRouter = express.Router();
 
@@ -19,7 +19,14 @@ hoopsbotRouter.get(
   "/generate",
   cors(corsConfig),
   passport.authenticate("bearer", { session: false }),
-  async (req, res) => generate(req, res)
+  async (req, res) => await generate(req, res)
+);
+
+hoopsbotRouter.post(
+  "/new",
+  cors(corsConfig),
+  passport.authenticate("bearer", { session: false }),
+  async (req, res) => await save(req, res)
 );
 
 export default hoopsbotRouter;

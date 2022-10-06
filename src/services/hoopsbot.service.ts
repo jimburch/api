@@ -37,6 +37,24 @@ export const generateTake = async (prompt: string): Promise<Take> => {
   return completion;
 };
 
-// save new take to DB
+export const saveNewTakeToDatabase = async (prompt: string): Promise<Take> => {
+  const { take, hot, cold, shares, created_at, updated_at } =
+    await generateTake(prompt);
+  const savedTake = knex("takes")
+    .insert({
+      take,
+      hot,
+      cold,
+      shares,
+      created_at,
+      updated_at,
+    })
+    .returning("*")
+    .catch((error: string) => {
+      throw new Error(error);
+    });
+  if (!savedTake) throw new Error("Could not save generated take");
+  return savedTake;
+};
 
 // update take in DB
