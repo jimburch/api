@@ -5,12 +5,12 @@ import passport from "passport";
 import { Strategy } from "passport-http-bearer";
 
 import hoopsbotRouter from "./routes/hoopsbot.routes";
-import { corsConfig } from "./utilities/cors";
 
 const PORT = process.env.PORT || 8080;
 
 const app = express();
 
+app.use(express.json());
 app.use(cors());
 app.use(passport.initialize());
 
@@ -22,15 +22,6 @@ passport.use(
       return done(null, false);
     }
   })
-);
-
-app.get(
-  "/",
-  cors(corsConfig),
-  passport.authenticate("bearer", { session: false }),
-  async (req, res) => {
-    res.send({ message: "Hello World" });
-  }
 );
 
 app.use("/hoopsbot", hoopsbotRouter);

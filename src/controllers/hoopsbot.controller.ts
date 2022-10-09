@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
-import { Take } from "../models/hoopsbot.model";
+import { Take, TakeRecord } from "../models/hoopsbot.model";
 import {
   generateTake,
   saveNewTakeToDatabase,
+  updateTake,
 } from "../services/hoopsbot.service";
 
 export const generate = async (
@@ -31,6 +32,31 @@ export const save = async (
     if (!savedTake)
       return res.status(400).send("Could not save new take to database");
     return res.status(201).send(savedTake);
+  } catch (error) {
+    return res.status(500).send(error);
+  }
+};
+
+export const update = async (
+  req: Request,
+  res: Response
+): Promise<Response<Take>> => {
+  const takeId = req.params.id as string;
+  const takeBody = req.body as TakeRecord;
+  if (
+    !takeBody ||
+    !takeId ||
+    !Object.keys(takeBody).includes("hot") ||
+    !Object.keys(takeBody).includes("cold") ||
+    !Object.keys(takeBody).includes("shares")
+  )
+    return res
+      .status(400)
+      .send("Missing take update body or required properties");
+  try {
+    const updatedTake = await updateTake(takeId, takeBody);
+    if (!updatedTake) return res.status(400).send("Could not update take");
+    return res.status(200).send(updatedTake);
   } catch (error) {
     return res.status(500).send(error);
   }

@@ -1,6 +1,6 @@
 import { Configuration, OpenAIApi } from "openai";
 import { knex } from "../utilities/knex";
-import { Take } from "../models/hoopsbot.model";
+import { Take, TakeRecord } from "../models/hoopsbot.model";
 
 const { OPENAI_AUTH, OPENAI_ORG } = process.env;
 
@@ -11,7 +11,6 @@ const configuration = new Configuration({
 
 const openai = new OpenAIApi(configuration);
 
-// "Write a controversial NBA hot take in the style of a tweet in 280 characters or less."
 export const generateTake = async (prompt: string): Promise<Take> => {
   const completion: Take = await openai
     .createCompletion({
@@ -37,11 +36,32 @@ export const generateTake = async (prompt: string): Promise<Take> => {
   return completion;
 };
 
-export const saveNewTakeToDatabase = async (prompt: string): Promise<Take> => {
-  const { take, hot, cold, shares, created_at, updated_at } =
-    await generateTake(prompt);
-  const savedTake = knex("takes")
+export const saveNewTakeToDatabase = async (
+  prompt: string
+): Promise<TakeRecord> => {
+  const { take, hot, cold, shares } = await generateTake(prompt);
+  const savedTake = await knex("takes")
     .insert({
+      take,
+      hot,
+      cold,
+      shares,
+    })
+    .returning("*")
+    .catch((error: string) => {
+      throw new Error(error);
+    });
+  if (!savedTake) throw new Error("Could not save generated take");
+  return savedTake[0];
+};
+
+export const updateTake = async (
+  takeId: string,
+  takeUpdate: TakeRecord
+): Promise<TakeRecord> => {
+  const { take, hot, cold, shares, created_at, updated_at } = takeUpdate;
+  const updatedTake = await knex("takes")
+    .update({
       take,
       hot,
       cold,
@@ -49,12 +69,11 @@ export const saveNewTakeToDatabase = async (prompt: string): Promise<Take> => {
       created_at,
       updated_at,
     })
+    .where({ id: takeId })
     .returning("*")
     .catch((error: string) => {
       throw new Error(error);
     });
-  if (!savedTake) throw new Error("Could not save generated take");
-  return savedTake;
+  if (!updatedTake) throw new Error("Could not update take");
+  return updatedTake;
 };
-
-// update take in DB
