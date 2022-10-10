@@ -89,3 +89,15 @@ export const deleteTake = async (takeId: string): Promise<TakeRecord> => {
   if (!deletedTake) throw new Error("Could not delete take");
   return deletedTake;
 };
+
+export const getRandomTake = async (): Promise<TakeRecord> => {
+  const randomTake = await knex("takes")
+    .where({ deleted_at: null })
+    .orderByRaw("RANDOM()")
+    .first()
+    .catch((error: string) => {
+      throw new Error(error);
+    });
+  if (!randomTake) throw new Error("Could not get random take");
+  return randomTake;
+};
