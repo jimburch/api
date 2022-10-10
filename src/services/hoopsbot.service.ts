@@ -77,3 +77,15 @@ export const updateTake = async (
   if (!updatedTake) throw new Error("Could not update take");
   return updatedTake;
 };
+
+export const deleteTake = async (takeId: string): Promise<TakeRecord> => {
+  const deletedTake = await knex("takes")
+    .update({ deleted_at: new Date() })
+    .where({ id: takeId })
+    .returning("*")
+    .catch((error: string) => {
+      throw new Error(error);
+    });
+  if (!deletedTake) throw new Error("Could not delete take");
+  return deletedTake;
+};
