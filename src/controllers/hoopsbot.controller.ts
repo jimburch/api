@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { Take, TakeRecord } from "../models/hoopsbot.model";
 import {
+  deleteTake,
   generateTake,
   saveNewTakeToDatabase,
   updateTake,
@@ -57,6 +58,21 @@ export const update = async (
     const updatedTake = await updateTake(takeId, takeBody);
     if (!updatedTake) return res.status(400).send("Could not update take");
     return res.status(200).send(updatedTake);
+  } catch (error) {
+    return res.status(500).send(error);
+  }
+};
+
+export const remove = async (
+  req: Request,
+  res: Response
+): Promise<Response<Take>> => {
+  const takeId = req.params.id as string;
+  if (!takeId) return res.status(400).send("Missing take id");
+  try {
+    const deletedTake = await deleteTake(takeId);
+    if (!deletedTake) return res.status(400).send("Could not delete take");
+    return res.status(202).send(deletedTake);
   } catch (error) {
     return res.status(500).send(error);
   }

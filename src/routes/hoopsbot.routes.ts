@@ -2,7 +2,12 @@ import express from "express";
 import cors from "cors";
 import { corsConfig } from "../utilities/cors";
 import passport from "passport";
-import { generate, save, update } from "../controllers/hoopsbot.controller";
+import {
+  generate,
+  remove,
+  save,
+  update,
+} from "../controllers/hoopsbot.controller";
 
 const hoopsbotRouter = express.Router();
 
@@ -34,6 +39,13 @@ hoopsbotRouter.put(
   cors(corsConfig),
   passport.authenticate("bearer", { session: false }),
   async (req, res) => await update(req, res)
+);
+
+hoopsbotRouter.delete(
+  "/delete/:id",
+  cors(corsConfig),
+  passport.authenticate("bearer", { session: false }),
+  async (req, res) => await remove(req, res)
 );
 
 export default hoopsbotRouter;
