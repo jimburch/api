@@ -3,6 +3,7 @@ import { Take, TakeRecord } from "../models/hoopsbot.model";
 import {
   deleteTake,
   generateTake,
+  getRandomTake,
   saveNewTakeToDatabase,
   updateTake,
 } from "../services/hoopsbot.service";
@@ -17,6 +18,19 @@ export const generate = async (
     const take = await generateTake(prompt);
     if (!take) return res.status(400).send("Could not generate take");
     return res.status(200).send(take);
+  } catch (error) {
+    return res.status(500).send(error);
+  }
+};
+
+export const getRandom = async (
+  req: Request,
+  res: Response
+): Promise<Response<TakeRecord>> => {
+  try {
+    const randomTake = await getRandomTake();
+    if (!randomTake) return res.status(400).send("Could not get random take");
+    return res.status(200).send(randomTake);
   } catch (error) {
     return res.status(500).send(error);
   }
@@ -41,7 +55,7 @@ export const save = async (
 export const update = async (
   req: Request,
   res: Response
-): Promise<Response<Take>> => {
+): Promise<Response<TakeRecord>> => {
   const takeId = req.params.id as string;
   const takeBody = req.body as TakeRecord;
   if (
@@ -66,7 +80,7 @@ export const update = async (
 export const remove = async (
   req: Request,
   res: Response
-): Promise<Response<Take>> => {
+): Promise<Response<TakeRecord>> => {
   const takeId = req.params.id as string;
   if (!takeId) return res.status(400).send("Missing take id");
   try {

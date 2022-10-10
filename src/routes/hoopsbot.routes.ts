@@ -4,6 +4,7 @@ import { corsConfig } from "../utilities/cors";
 import passport from "passport";
 import {
   generate,
+  getRandom,
   remove,
   save,
   update,
@@ -25,6 +26,13 @@ hoopsbotRouter.get(
   cors(corsConfig),
   passport.authenticate("bearer", { session: false }),
   async (req, res) => await generate(req, res)
+);
+
+hoopsbotRouter.get(
+  "/random",
+  cors(corsConfig),
+  passport.authenticate("bearer", { session: false }),
+  async (req, res) => await getRandom(req, res)
 );
 
 hoopsbotRouter.post(
