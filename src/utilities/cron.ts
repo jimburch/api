@@ -6,3 +6,8 @@ cron.schedule("0 12,16,20 * * *", () => {
     "Write a controversial NBA hot take in the style of a tweet in 280 characters or less."
   );
 });
+
+//cron job that runs every 10 seconds
+cron.schedule("*/10 * * * * * *", () => {
+  console.log("running a task every 10 seconds");
+});
