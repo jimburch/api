@@ -3,10 +3,12 @@ import { TweetV1, TwitterApi } from "twitter-api-v2";
 import { knex } from "../utilities/knex";
 import { Take, TakeRecord } from "../models/hoopsbot.model";
 
+const { OPENAI_ORG, OPENAI_AUTH } = process.env;
+
 // congifure openai
 const configuration = new Configuration({
-  organization: process.env.OPENAI_ORG,
-  apiKey: process.env.OPENAI_AUTH,
+  organization: OPENAI_ORG,
+  apiKey: OPENAI_AUTH,
 });
 const openai = new OpenAIApi(configuration);
 
