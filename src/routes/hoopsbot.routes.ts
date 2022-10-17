@@ -7,19 +7,11 @@ import {
   getRandom,
   remove,
   save,
+  tweet,
   update,
 } from "../controllers/hoopsbot.controller";
 
 const hoopsbotRouter = express.Router();
-
-hoopsbotRouter.get(
-  "/",
-  cors(corsConfig),
-  passport.authenticate("bearer", { session: false }),
-  async (req, res) => {
-    res.send({ message: "NBA hot takes!" });
-  }
-);
 
 hoopsbotRouter.get(
   "/generate",
@@ -40,6 +32,13 @@ hoopsbotRouter.post(
   cors(corsConfig),
   passport.authenticate("bearer", { session: false }),
   async (req, res) => await save(req, res)
+);
+
+hoopsbotRouter.post(
+  "/tweet",
+  cors(corsConfig),
+  passport.authenticate("bearer", { session: false }),
+  async (req, res) => await tweet(req, res)
 );
 
 hoopsbotRouter.put(

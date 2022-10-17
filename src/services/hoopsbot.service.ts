@@ -1,15 +1,23 @@
 import { Configuration, OpenAIApi } from "openai";
+import { TweetV1, TwitterApi } from "twitter-api-v2";
 import { knex } from "../utilities/knex";
 import { Take, TakeRecord } from "../models/hoopsbot.model";
 
-const { OPENAI_AUTH, OPENAI_ORG } = process.env;
-
+// congifure openai
 const configuration = new Configuration({
-  organization: OPENAI_ORG,
-  apiKey: OPENAI_AUTH,
+  organization: process.env.OPENAI_ORG,
+  apiKey: process.env.OPENAI_AUTH,
 });
-
 const openai = new OpenAIApi(configuration);
+
+// configure twitter
+const twitterClient = new TwitterApi({
+  appKey: process.env.TWITTER_API_KEY || "",
+  appSecret: process.env.TWITTER_API_KEY_SECRET || "",
+  accessToken: process.env.TWITTER_ACCESS_TOKEN,
+  accessSecret: process.env.TWITTER_ACCESS_TOKEN_SECRET,
+});
+const rwClient = twitterClient.readWrite;
 
 export const generateTake = async (prompt: string): Promise<Take> => {
   const completion: Take = await openai
@@ -100,4 +108,16 @@ export const getRandomTake = async (): Promise<TakeRecord> => {
     });
   if (!randomTake) throw new Error("Could not get random take");
   return randomTake;
+};
+
+export const tweetNewTake = async (prompt: string): Promise<TweetV1 | void> => {
+  const { take } = await saveNewTakeToDatabase(prompt);
+  try {
+    const postTweet = await rwClient.v1.tweet(take);
+    if (!postTweet) throw new Error("Could not post tweet");
+    console.log("@HoopsBotAI tweeted: ", take);
+    return postTweet;
+  } catch (error) {
+    console.error(error);
+  }
 };
