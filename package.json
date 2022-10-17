@@ -48,6 +48,7 @@
     "openai": "^3.0.0",
     "passport": "^0.6.0",
     "passport-http-bearer": "^1.0.1",
-    "pg": "^8.8.0"
+    "pg": "^8.8.0",
+    "twitter-api-v2": "^1.12.8"
   }
 }

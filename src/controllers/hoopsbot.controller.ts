@@ -1,10 +1,12 @@
 import { Request, Response } from "express";
+import { TweetV1 } from "twitter-api-v2";
 import { Take, TakeRecord } from "../models/hoopsbot.model";
 import {
   deleteTake,
   generateTake,
   getRandomTake,
   saveNewTakeToDatabase,
+  tweetNewTake,
   updateTake,
 } from "../services/hoopsbot.service";
 
@@ -87,6 +89,21 @@ export const remove = async (
     const deletedTake = await deleteTake(takeId);
     if (!deletedTake) return res.status(400).send("Could not delete take");
     return res.status(202).send(deletedTake);
+  } catch (error) {
+    return res.status(500).send(error);
+  }
+};
+
+export const tweet = async (
+  req: Request,
+  res: Response
+): Promise<Response<TweetV1>> => {
+  const prompt = req.query.prompt as string;
+  if (!prompt) return res.status(400).send("Missing text prompt");
+  try {
+    const tweet = await tweetNewTake(prompt);
+    if (!tweet) return res.status(400).send("Could not tweet new take");
+    return res.status(201).send(tweet);
   } catch (error) {
     return res.status(500).send(error);
   }
