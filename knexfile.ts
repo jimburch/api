@@ -1,9 +1,15 @@
 require("dotenv").config();
+import { Knex } from "knex";
 
-module.exports = {
+interface KnexConfig {
+  [key: string]: Knex.Config;
+}
+
+const configs: KnexConfig = {
   development: {
     client: "pg",
     connection: process.env.DB_URL,
+    debug: true,
   },
 
   staging: {
@@ -32,3 +38,5 @@ module.exports = {
     },
   },
 };
+
+export default configs;

@@ -1,6 +1,6 @@
 import { Configuration, OpenAIApi } from "openai";
 import { TweetV1, TwitterApi } from "twitter-api-v2";
-import { knex } from "../utilities/knex";
+import db from "../utilities/db";
 import { Take, TakeRecord } from "../models/hoopsbot.model";
 
 const { OPENAI_ORG, OPENAI_AUTH } = process.env;
@@ -50,7 +50,7 @@ export const saveNewTakeToDatabase = async (
   prompt: string
 ): Promise<TakeRecord> => {
   const { take, hot, cold, shares } = await generateTake(prompt);
-  const savedTake = await knex("takes")
+  const savedTake = await db("takes")
     .insert({
       take,
       hot,
@@ -70,7 +70,7 @@ export const updateTake = async (
   takeUpdate: TakeRecord
 ): Promise<TakeRecord> => {
   const { take, hot, cold, shares, created_at, updated_at } = takeUpdate;
-  const updatedTake = await knex("takes")
+  const updatedTake = await db("takes")
     .update({
       take,
       hot,
@@ -85,11 +85,11 @@ export const updateTake = async (
       throw new Error(error);
     });
   if (!updatedTake) throw new Error("Could not update take");
-  return updatedTake;
+  return updatedTake[0];
 };
 
 export const deleteTake = async (takeId: string): Promise<TakeRecord> => {
-  const deletedTake = await knex("takes")
+  const deletedTake = await db("takes")
     .update({ deleted_at: new Date() })
     .where({ id: takeId })
     .returning("*")
@@ -97,11 +97,11 @@ export const deleteTake = async (takeId: string): Promise<TakeRecord> => {
       throw new Error(error);
     });
   if (!deletedTake) throw new Error("Could not delete take");
-  return deletedTake;
+  return deletedTake[0];
 };
 
 export const getRandomTake = async (): Promise<TakeRecord> => {
-  const randomTake = await knex("takes")
+  const randomTake = await db("takes")
     .where({ deleted_at: null })
     .orderByRaw("RANDOM()")
     .first()
