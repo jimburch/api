@@ -4,11 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
-    "start": "node ./dist/src/index.js & node ./dist/src/utilities/cron.js",
-    "dev": "nodemon ./src/index.ts & nodemon ./src/utilities/cron.ts",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "db:migrate": "knex migrate:latest"
+    "build": "yarn install && tsc",
+    "start:prod": "yarn db:migrate && node ./dist/src/index.js & yarn cron:prod",
+    "start": "nodemon ./src/index.ts & yarn cron",
+    "cron:prod": "node ./dist/src/utilities/cron.js",
+    "cron": "nodemon ./src/utilities/cron.ts",
+    "db:migrate": "knex migrate:latest",
+    "db:rollback": "knex migrate:rollback"
   },
   "repository": {
     "type": "git",
