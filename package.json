@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "yarn install && tsc",
-    "start:prod": "yarn db:migrate && node ./dist/src/index.js & yarn cron:prod",
-    "start": "nodemon ./src/index.ts & yarn cron",
+    "start:prod": "yarn db:migrate && node ./dist/src/index.js && yarn cron:prod",
+    "start": "nodemon ./src/index.ts && yarn cron",
     "cron:prod": "node ./dist/src/utilities/cron.js",
     "cron": "nodemon ./src/utilities/cron.ts",
     "db:migrate": "knex migrate:latest",
