@@ -22,7 +22,7 @@ hoopsbotRouter.get(
 
 hoopsbotRouter.get(
   "/random",
-  // cors(corsConfig),
+  cors(corsConfig),
   passport.authenticate("bearer", { session: false }),
   async (req, res) => await getRandom(req, res)
 );
